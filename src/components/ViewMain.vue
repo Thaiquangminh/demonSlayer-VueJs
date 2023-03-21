@@ -87,13 +87,23 @@ export default {
     attackMonster() {
       this.count += 1
       const attackValue =  this.getRandomValue(5, 12)
-      this.monsterHealth -= attackValue
+      if(this.monsterHealth - attackValue < 0) {
+        this.monsterHealth = 0
+      }
+      else {
+        this.monsterHealth -= attackValue
+      }
       this.attackPlayer()
       this.logMessage('player', 'attack', attackValue)
     },
     attackPlayer() {
       const attackValue =  this.getRandomValue(8, 12)
-      this.playerHealth -= attackValue
+      if(this.playerHealth - attackValue < 0) {
+        this.playerHealth = 0
+      }
+      else {
+        this.playerHealth -= attackValue
+      }
       this.logMessage('monster', 'attack', attackValue)
     },
     specialAttack() {
