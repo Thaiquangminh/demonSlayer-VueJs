@@ -1,6 +1,6 @@
 <template>
   <header>
-    <h1>Monster Slayer</h1>
+    <h1>Monster Slayer by Tequyem</h1>
   </header>
   <div id="game">
     <section id="monster" class="container">
@@ -30,19 +30,27 @@
     </section>
     <section id="log" class="container">
       <h2>Battle Log</h2>
-      <ul></ul>
+      <ul v-for="logMessage in logMessagesValue" :key="logMessage.id">
+        <li>
+          <span :class="logMessage.who === 'player' ? 'log--player' : 'log--monster '">{{logMessage.who === 'player' ? 'Player ' : 'Monster '}}</span>
+          <span v-if="logMessage.action==='heal'" class="log--heal">heal himself for <span>{{logMessage.value}}</span></span>
+          <span v-else>attacks and deals  <span class="log--damage">{{logMessage.value}}</span> damage to <span :class="logMessage.who === 'player' ? 'log--monster': 'log--player'">{{logMessage.who === 'player' ? 'Monster ': 'Player '}}</span></span>
+        </li>
+      </ul>
     </section>
   </div>
 </template>
 
 <script>
+import { v1 } from 'uuid'
 export default {
   data() {
     return {
       playerHealth: 100,
       monsterHealth: 100,
       count: 0,
-      winner: ''
+      winner: '',
+      logMessagesValue: []
     }
   },
   computed: {
@@ -81,34 +89,47 @@ export default {
       const attackValue =  this.getRandomValue(5, 12)
       this.monsterHealth -= attackValue
       this.attackPlayer()
+      this.logMessage('player', 'attack', attackValue)
     },
     attackPlayer() {
       const attackValue =  this.getRandomValue(8, 12)
       this.playerHealth -= attackValue
+      this.logMessage('monster', 'attack', attackValue)
     },
     specialAttack() {
       this.count -= 3
       const attackValue = this.getRandomValue(10, 20)
       this.monsterHealth -= attackValue
       this.attackPlayer()
+      this.logMessage('player', 'attack', attackValue)
     },
     healPlayer() {
-      const healValue = this.getRandomValue(5,18)
+      const healValue = this.getRandomValue(3,15)
       if(this.playerHealth + healValue > 100) {
         this.playerHealth = 100
       }
       else {
         this.playerHealth += healValue
       }
+      this.logMessage('player', 'heal', healValue)
     },
     resetGame() {
       this.playerHealth = 100
       this.monsterHealth = 100
       this.count = 0
       this.winner = ''
+      this.logMessagesValue = []
     },
     surrender() {
       this.winner = 'monster'
+    },
+    logMessage(who, action, value) {
+      this.logMessagesValue.unshift({
+        id: v1(),
+        who: who,
+        action: action,
+        value: value
+      })
     }
   }
 
